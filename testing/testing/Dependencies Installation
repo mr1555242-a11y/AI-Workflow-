@@ -1,0 +1,9 @@
+npm install -D @playwright/test vitest \
+  @vitejs/plugin-react jsdom \
+  @testing-library/react \
+  @testing-library/jest-dom \
+  lighthouse @lhci/cli
+
+npm install nodemailer
+
+npx playwright install chromium
