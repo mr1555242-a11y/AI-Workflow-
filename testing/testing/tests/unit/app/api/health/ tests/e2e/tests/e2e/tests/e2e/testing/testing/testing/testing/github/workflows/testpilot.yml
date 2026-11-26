@@ -1,0 +1,115 @@
+
+name: TestPilot AI - Automated Testing
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_performance:
+        description: Run Lighthouse performance audit
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  automated-testing:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install Playwright Browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Run Unit Tests
+        id: unit
+        continue-on-error: true
+        run: npm run test:unit
+
+      - name: Run Browser and Mobile Tests
+        id: e2e
+        continue-on-error: true
+        run: npm run test:e2e
+        env:
+          BASE_URL: http://127.0.0.1:3000
+
+      - name: Run Performance Audit
+        id: performance
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_performance }}
+        continue-on-error: true
+        run: |
+          npm run test:performance
+        env:
+          LHCI_BUILD_CONTEXT__CURRENT_BRANCH: ${{ github.ref_name }}
+
+      - name: Analyze Test Failures
+        if: always()
+        run: npm run report:bugs
+
+      - name: Generate AI Summary
+        if: always()
+        run: npm run report:ai
+        env:
+          AI_API_URL: ${{ secrets.AI_API_URL }}
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+
+      - name: Generate PDF
+        if: always()
+        run: npm run report:pdf
+
+      - name: Send Email Notification
+        if: always()
+        run: npm run report:email
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+
+      - name: Upload Complete Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestPilot-AI-Reports
+          path: |
+            playwright-report/
+            test-results/
+            coverage/
+            .lighthouseci/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Fail Workflow if Tests Failed
+        if: always()
+        env:
+          UNIT_RESULT: ${{ steps.unit.outcome }}
+          E2E_RESULT: ${{ steps.e2e.outcome }}
+          PERF_RESULT: ${{ steps.performance.outcome }}
+        run: |
+          if [ "$UNIT_RESULT" != "success" ] || \
+             [ "$E2E_RESULT" != "success" ] || \
+             [ "$PERF_RESULT" = "failure" ]; then
+            echo "TestPilot AI detected a failure."
+            exit 1
+          fi
