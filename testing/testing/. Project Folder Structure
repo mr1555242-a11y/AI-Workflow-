@@ -1,0 +1,31 @@
+testpilot-ai/
+│
+├── app/
+│   └── api/
+│       └── health/
+│           └── route.ts
+│
+├── tests/
+│   ├── e2e/
+│   │   ├── homepage.spec.ts
+│   │   ├── navigation.spec.ts
+│   │   └── mobile.spec.ts
+│   │
+│   └── unit/
+│       └── sample.test.ts
+│
+├── testing/
+│   ├── generate-pdf.mjs
+│   ├── ai-summary.mjs
+│   ├── bug-analyzer.mjs
+│   └── send-email.mjs
+│
+├── .github/
+│   └── workflows/
+│       └── testpilot.yml
+│
+├── playwright.config.ts
+├── vitest.config.ts
+├── lighthouserc.json
+├── package.json
+└── .env.example
