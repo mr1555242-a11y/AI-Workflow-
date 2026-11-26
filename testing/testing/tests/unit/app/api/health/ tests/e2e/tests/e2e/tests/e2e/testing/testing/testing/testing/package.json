@@ -1,0 +1,14 @@
+
+{
+  "scripts": {
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "test:all": "npm run test:unit && npm run test:e2e",
+    "report:bugs": "node testing/bug-analyzer.mjs",
+    "report:ai": "node testing/ai-summary.mjs",
+    "report:pdf": "node testing/generate-pdf.mjs",
+    "report:email": "node testing/send-email.mjs",
+    "test:performance": "lhci autorun --config=lighthouserc.json",
+    "test:report": "npm run report:bugs && npm run report:ai"
+  }
+}
