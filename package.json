@@ -1,5 +1,11 @@
+
 {
   "name": "ai-workflow",
   "version": "1.0.0",
-  "scripts": {}
+  "scripts": {
+    "build": "echo Skipping build"
+  }
 }
+
+
+  
