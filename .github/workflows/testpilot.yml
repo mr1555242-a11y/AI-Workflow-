@@ -9,7 +9,7 @@ on:
 
 jobs:
   run-tests:
-  /working -directory: testing 
+  working -directory: testing 
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
