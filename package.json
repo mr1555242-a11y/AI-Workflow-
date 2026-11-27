@@ -1,10 +1,15 @@
-{
+
+  {
   "name": "ai-workflow",
   "version": "1.0.0",
   "scripts": {
     "build": "echo Skipping build",
-    "test:unit": "echo Running unit tests",
-    "test:e2e": "echo Running E2E tests",
-    "test:performance": "echo Running performance audit"
+    "test:unit": "jest",
+    "test:e2e": "npx playwright test",
+    "test:performance": "npx lighthouse-ci collect"
   }
 }
+
+    
+  
+
