@@ -9,8 +9,10 @@ on:
 
 jobs:
   run-tests:
-  working -directory: testing 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: testing
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -19,7 +21,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
       - name: Install dependencies
         run: npm install
@@ -55,5 +56,5 @@ jobs:
         with:
           name: test-reports
           path: |
-            playwright-report/
-            test-results/
+            testing/playwright-report/
+            testing/test-results/
